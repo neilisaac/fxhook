@@ -9,7 +9,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func TestFxHook(t *testing.T) {
+func TestCtxErrFuncError(t *testing.T) {
 	started := make(chan struct{})
 	finished := make(chan struct{})
 	expectedError := errors.New("expected")
@@ -22,7 +22,7 @@ func TestFxHook(t *testing.T) {
 	}
 
 	register := func(lc fx.Lifecycle) {
-		lc.Append(Go(callback))
+		lc.Append(CtxErrFunc(callback))
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)

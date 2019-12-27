@@ -2,11 +2,12 @@ package fxhook
 
 import (
 	"context"
+	"errors"
 
 	"go.uber.org/fx"
 )
 
-func Go(callback func(context.Context) error) fx.Hook {
+func CtxErrFunc(callback func(context.Context) error) fx.Hook {
 	runCtx, cancel := context.WithCancel(context.Background())
 	result := make(chan error)
 
@@ -22,6 +23,9 @@ func Go(callback func(context.Context) error) fx.Hook {
 			cancel()
 			select {
 			case err := <-result:
+				if errors.Is(err, runCtx.Err()) {
+					return nil
+				}
 				return err
 			case <-stopCtx.Done():
 				return stopCtx.Err()
